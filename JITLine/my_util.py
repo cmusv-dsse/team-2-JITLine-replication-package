@@ -2,18 +2,18 @@ import numpy as np
 import pandas as pd
 import time, math, os, re, pickle
 from sklearn.metrics import confusion_matrix, roc_auc_score, matthews_corrcoef, precision_recall_fscore_support, classification_report
-
+from tqdm import tqdm
 # data_dir = './data/'
 
 
 python_common_tokens = ['abs','delattr','hash','memoryview','set','all','dict','help','min','setattr','any','dir','hex','next','slice','ascii','divmod','id','object','sorted','bin','enumerate','input','oct','staticmethod','bool','eval','int','open','str','breakpoint','exec','isinstance','ord','sum','bytearray','filter','issubclass','pow','super','bytes','float','iter','print','tuple','callable','format','len','property','type','chr','frozenset','list','range','vars','classmethod','getattr','locals','repr','zip','compile','globals','map','reversed','__import__','complex','hasattr','max','round','False','await','else','import','passNone','break','except','in','raise','True','class','finally','is','return','and','continue','for','lambda','try','as','def','from','nonlocal','while','assert','del','global','not','with','async','elif','if','or','yield', 'self']
 
 def preprocess_code_line(code, remove_python_common_tokens=False):
-    code = code.replace('(',' ').replace(')',' ').replace('{',' ').replace('}',' ').replace('[',' ').replace(']',' ').replace('.',' ').replace(':',' ').replace(';',' ').replace(',',' ').replace(' _ ', '_')
+    # code = code.replace('(',' ').replace(')',' ').replace('{',' ').replace('}',' ').replace('[',' ').replace(']',' ').replace('.',' ').replace(':',' ').replace(';',' ').replace(',',' ').replace(' _ ', '_')
     code = re.sub('``.*``','<STR>',code)
     code = re.sub("'.*'",'<STR>',code)
     code = re.sub('".*"','<STR>',code)
-    code = re.sub('\d+','<NUM>',code)
+    # code = re.sub('\d+','<NUM>',code)
     
     if remove_python_common_tokens:
         new_code = ''
@@ -49,8 +49,8 @@ def load_data(proj, mode='train',use_text=True,remove_python_common_tokens=False
     if use_text:
         all_added_code = []
         all_removed_code = []
-
-        for code_change in all_code_change:
+        for index in tqdm(range(len(all_code_change))):
+            code_change = all_code_change[index]
             added_code_list = []
             removed_code_list = []
 
